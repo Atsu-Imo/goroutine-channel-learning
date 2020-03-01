@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -10,6 +11,7 @@ import (
 type Listener struct {
 	ctx        context.Context
 	cancelFunc context.CancelFunc
+	Wg         sync.WaitGroup
 }
 
 func NewListener(ctx context.Context) *Listener {
@@ -21,16 +23,21 @@ func NewListener(ctx context.Context) *Listener {
 }
 
 func (l *Listener) Listen() {
-	invoke := time.NewTicker(2 * time.Second)
-	timeout := time.NewTimer(7 * time.Second)
+	invoke := time.NewTicker(1 * time.Second)
 	for {
 		select {
 		case <-invoke.C:
-			fmt.Println("process started...")
-		case <-timeout.C:
-			fmt.Println("shutdown")
-			l.cancelFunc()
+			l.Wg.Add(1)
+			fmt.Println("wg count++")
+			conn := NewConn(l.ctx)
+			go conn.handleConnection()
+		case <-l.ctx.Done():
 			return
 		}
 	}
+}
+func (l *Listener) Shutdown() {
+	l.cancelFunc()
+	fmt.Println("waiting for children")
+	l.Wg.Wait()
 }

@@ -23,7 +23,9 @@ func main() {
 	case sig := <-sigChan:
 		switch sig {
 		case syscall.SIGINT:
-			fmt.Println("shutdown")
+			fmt.Println("shutdown start")
+			listener.Shutdown()
+			fmt.Println("shutdown end")
 		default:
 			fmt.Println("unexpected signal")
 		}
