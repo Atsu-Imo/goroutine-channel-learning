@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -15,7 +16,7 @@ func main() {
 	signal.Ignore()
 	signal.Notify(sigChan, syscall.SIGINT)
 
-	listener := server.NewListener()
+	listener := server.NewListener(context.Background())
 	go listener.Listen()
 	fmt.Println("listener started")
 	select {
