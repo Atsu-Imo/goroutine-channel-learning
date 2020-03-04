@@ -41,6 +41,8 @@ func (c *Conn) handleConnection() {
 		c.Wg.Done()
 		fmt.Println("end:", c.uuid)
 	}()
+	c.Wg.Add(1)
+	fmt.Println("wg count++")
 	fmt.Println("process started...: ", c.uuid)
 	invoke := time.NewTicker(1 * time.Second)
 	timeout := time.NewTimer(2 * time.Second)

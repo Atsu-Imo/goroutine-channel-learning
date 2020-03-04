@@ -27,8 +27,6 @@ func (l *Listener) Listen() {
 	for {
 		select {
 		case <-invoke.C:
-			l.Wg.Add(1)
-			fmt.Println("wg count++")
 			conn := NewConn(l.ctx)
 			go conn.handleConnection()
 		case <-l.ctx.Done():
